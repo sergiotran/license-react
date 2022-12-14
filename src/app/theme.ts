@@ -2,6 +2,10 @@ import { createTheme, PaletteOptions } from "@mui/material";
 import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 const themePalette: PaletteOptions = {
+  mode: 'light',
+  background: {
+    default: '#F7F7F7'
+  },
   primary: {
     main: "#3cbfae",
     dark: "#0a162c"

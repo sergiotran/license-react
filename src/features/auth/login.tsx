@@ -1,6 +1,6 @@
 import React from "react";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { MainInput } from "@/common/components/inputs";
 import PasswordIcon from "@mui/icons-material/Password";
 import KeyboardAltIcon from "@mui/icons-material/KeyboardAlt";
@@ -8,6 +8,12 @@ import CropFreeIcon from "@mui/icons-material/CropFree";
 import { capitalize, IconButton, InputAdornment, styled } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { LoginPayload } from "@/features/auth/auth-api";
+import { useNavigate } from "react-router-dom";
+import { fetchAccountById, setAccountId } from "../accounts/account-slice";
+import { useAppDispatch, useAppSelector } from "@/app/store";
+import { authLogin, selectIsProcessingAuthentication } from "./auth-slice";
+import { handleShowSnackbar } from "../snackbar/snackbar-slice";
 
 const LOGIN_TYPES = [
   {
@@ -28,14 +34,7 @@ const LOGIN_TYPES = [
 ] as const;
 type LOGIN_TYPE_VALUE = typeof LOGIN_TYPES[number]["value"];
 
-export type FormPayload = {
-  username?: string;
-  password?: string;
-  pin_code?: string;
-  bar_code?: string;
-};
-
-const LoginTypeButton = styled(Button, {
+const LoginTypeButton = styled(LoadingButton, {
   shouldForwardProp: (props) => props !== "isActive",
 })<{
   isActive: boolean;
@@ -62,7 +61,7 @@ const LoginForm = styled("form")({
   maxWidth: "100%",
 });
 
-const SubmitButton = styled(Button)(({ theme }) => ({
+const SubmitButton = styled(LoadingButton)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.common.white,
   marginTop: 30,
@@ -72,13 +71,15 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   textAlign: "center",
 }));
 
-
-
 const LoginUI = () => {
+  const dispatch = useAppDispatch();
   // States
-  const [loginType, setLoginTypes] = React.useState<LOGIN_TYPE_VALUE>("PASSWORD");
+  const isFormProcessing = useAppSelector(selectIsProcessingAuthentication);
+  const [loginType, setLoginTypes] =
+    React.useState<LOGIN_TYPE_VALUE>("PASSWORD");
   const [isShowPassword, setIsShowPassword] = React.useState<boolean>(false);
 
+  // Default form values & controller
   const formDefaultValue = React.useMemo(() => {
     switch (loginType) {
       case "PASSWORD":
@@ -98,9 +99,12 @@ const LoginUI = () => {
   }, [loginType]);
 
   // Hooks
-  const { control, handleSubmit, reset } = useForm<FormPayload>({
+  const { control, handleSubmit, reset } = useForm<
+    Partial<LoginPayload>
+  >({
     defaultValues: formDefaultValue,
   });
+  const navigate = useNavigate();
 
   // Handlers
   const handleClickShowPassword = () => setIsShowPassword(true);
@@ -110,8 +114,25 @@ const LoginUI = () => {
   };
 
   const handleSubmitForm = React.useCallback(
-    (payload: FormPayload) => {
-      console.log(payload);
+    (payload: Partial<LoginPayload>) => {
+      dispatch(authLogin(payload))
+        .unwrap()
+        .then((data) => {
+          dispatch(setAccountId(data.account_id));
+          dispatch(fetchAccountById(data.account_id));
+          localStorage.setItem("access_token", data.access_token);
+          localStorage.setItem("refresh_token", data.refresh_token);
+          localStorage.setItem("jwt", data.jwt);
+          navigate("/dashboard/home");
+        })
+        .catch((err) => {
+          dispatch(
+            handleShowSnackbar({
+              type: "error",
+              message: err.message,
+            })
+          );
+        });
     },
     [loginType]
   );
@@ -150,7 +171,7 @@ const LoginUI = () => {
             name={(() => {
               if (loginType === "PASSWORD") return "username";
               if (loginType === "PINCODE") return "pin_code";
-              return "bar_code";
+              return "app_id";
             })()}
             control={control}
             render={({ field }) => (
@@ -197,8 +218,13 @@ const LoginUI = () => {
             />
           )}
         </Stack>
-        <SubmitButton variant="contained" type="submit">
-          Login
+        <SubmitButton
+          loading={isFormProcessing}
+          disabled={isFormProcessing}
+          variant="contained"
+          type="submit"
+        >
+          {isFormProcessing ? "Loading..." : "Login"}
         </SubmitButton>
       </LoginForm>
     </>

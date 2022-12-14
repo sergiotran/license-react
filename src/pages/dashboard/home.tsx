@@ -1,5 +1,6 @@
 import React from "react";
 import MainLayout from '@/common/layouts/main-layout';
+import withAuth from '@/common/hocs/with-auth';
 
 const DashboardHomePage = () => {
   return (
@@ -9,4 +10,4 @@ const DashboardHomePage = () => {
   );
 };
 
-export default DashboardHomePage;
+export default withAuth(DashboardHomePage);

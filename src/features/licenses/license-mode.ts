@@ -1,0 +1,32 @@
+export interface License {
+  id: string;
+  application_id: string;
+  application_code: string;
+  store_id: string;
+  merchant_id: string;
+  plan_id: string;
+  plan_code: string;
+  recurring_cycle: string;
+  last_purchase: string;
+  expiry_date: string;
+  amount: number;
+  uint_price: string;
+  price: string;
+  is_active: boolean;
+  access_token: string;
+  access_token_secret: string;
+  api_version: string;
+  platform: string;
+  external_id: string;
+  charge_id: string;
+  prev_charge_id: string;
+  api_url: string;
+  auth_url: string;
+  is_confirm: boolean;
+  onboard_status: string;
+  created_at: string;
+  updated_at: string;
+  account_id: string;
+  consumer_key: string;
+  consumer_secret: string;
+}
