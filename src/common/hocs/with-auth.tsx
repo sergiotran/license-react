@@ -13,7 +13,7 @@ function withAuth<T extends {}>(Component: React.ComponentType<T>) {
       }
   
       if (token && location.pathname === '/auth/login') {
-        navigate('/dashboard/home');
+        navigate('/settings/home');
       }
     }, [token]);
 

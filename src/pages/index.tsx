@@ -8,8 +8,8 @@ function HomePage() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    navigate('/dashboard/home');
-  }, [])
+    navigate('/settings/home');
+  }, []);
 
   return (
     <MainLayout>

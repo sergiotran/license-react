@@ -16,6 +16,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useAppSelector } from '@/app/store';
+import { selectIsNavigationOpen, toggleNavigationOpen, setNavigationState, setIsNavigationFixed, selectIsNavigationFixed } from './navigation-slice';
+import { useDispatch } from 'react-redux';
 
 type NavigationProps = {
   [title: string]: Array<NavigationItemProps>;
@@ -40,6 +43,7 @@ const Menu = styled("nav", {
   maxHeight: "100%",
   maxWidth: "100%",
   height: "100vh",
+  zIndex: 1000
 }));
 
 const MenuSeparateTitle = styled(Typography)(({ theme }) => ({
@@ -62,40 +66,44 @@ const MenuItemIcon = styled("img")({
 const MenuItem = styled(ListItemButton, {
   shouldForwardProp: (props) => props !== "isCollapsed",
 })<{ isCollapsed: boolean } & ListItemButtonProps>(
-  ({ theme, isCollapsed }) => ({
-    position: "relative",
-    padding: 0,
-    "& a": {
-      padding: isCollapsed ? "0 40px" : "0",
-      color: "#646C7B",
-      textDecoration: "none",
-      display: "flex",
-      ...(!isCollapsed
-        ? {
-            width: 40,
-            height: 40,
-            flex: 0,
-            flexBasis: 40,
-            justifyContent: "center",
-          }
-        : {
-            alignItems: "center",
-            flex: 1,
-            gap: 16,
-          }),
-      "&:hover, &.active": {
-        backgroundColor: "#1D273C",
+  ({ theme, isCollapsed }) => {
+    const transition = theme.transitions.create('all')
+    return {
+      position: "relative",
+      padding: 0,
+      "& a": {
+        padding: isCollapsed ? "0 40px" : "0",
+        color: "#646C7B",
+        textDecoration: "none",
+        display: "flex",
+        transition: transition,
+        ...(!isCollapsed
+          ? {
+              width: 40,
+              height: 40,
+              flex: 0,
+              flexBasis: 40,
+              justifyContent: "center",
+            }
+          : {
+              alignItems: "center",
+              flex: 1,
+              gap: 16,
+            }),
+        "&:hover, &.active": {
+          backgroundColor: "#1D273C",
+        },
+        "& span": {
+          lineHeight: "48px",
+          fontSize: 15,
+          fontWeight: 400,
+        },
       },
-      "& span": {
-        lineHeight: "48px",
-        fontSize: 15,
-        fontWeight: 400,
+      "&:hover a, & a.active": {
+        color: theme.palette.primary.main,
       },
-    },
-    "&:hover a, & a.active": {
-      color: theme.palette.primary.main,
-    },
-  })
+    };
+  }
 );
 
 const Header = styled(Stack, {
@@ -117,34 +125,34 @@ const ToggleButton = styled(IconButton)({
 const NAVIGATION_ITEMS = {
   "Account Management": [
     {
-      href: "/dashboard/account-information",
+      href: "/settings/account-information",
       value: "Account information",
       icon: "/icons/ic-account.svg",
     },
     {
-      href: "/dashboard/security",
+      href: "/settings/security",
       value: "Security",
       icon: "/icons/ic-lock.svg",
     },
     {
-      href: "/dashboard/licenses",
+      href: "/settings/licenses/manage",
       value: "License",
       icon: "/icons/ic-key.svg",
     },
     {
-      href: "/dashboard/payment",
+      href: "/settings/payment-method/manage",
       value: "Payment method",
       icon: "/icons/ic-credit.svg",
     },
   ],
   "User Management": [
     {
-      href: "/dashboard/users",
+      href: "/settings/users/manage",
       value: "All Users",
       icon: "/icons/ic-users.svg",
     },
     {
-      href: "/dashboard/roles",
+      href: "/settings/permission/manage",
       value: "Roles & Permissions",
       icon: "/icons/ic-user-guard.svg",
     },
@@ -152,16 +160,17 @@ const NAVIGATION_ITEMS = {
 } as NavigationProps;
 
 const CollapsibleNavigation: React.FC = () => {
-  const [isFixed, setIsFixed] = React.useState<boolean>(false);
-  const [isCollapsed, setIsCollapsed] = React.useState<boolean>(true);
+  const dispatch = useDispatch();
+  const isOpen = useAppSelector(selectIsNavigationOpen);
+  const isFixed = useAppSelector(selectIsNavigationFixed);
 
-  const handleToggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const handleToggleCollapse = () => dispatch(toggleNavigationOpen());
 
   React.useEffect(() => {
     const handler = () => {
       const width = window.innerWidth;
-      setIsCollapsed(width > 768);
-      setIsFixed(width <= 768);
+      dispatch(setNavigationState(width > 768));
+      dispatch(setIsNavigationFixed(width <= 768));
     };
     handler();
     window.addEventListener("resize", handler);
@@ -170,7 +179,7 @@ const CollapsibleNavigation: React.FC = () => {
 
   return (
     <Menu isFixed={isFixed}>
-      <Collapse orientation="horizontal" in={isCollapsed} collapsedSize={40}>
+      <Collapse orientation="horizontal" in={isOpen} collapsedSize={40}>
         <Box
           width={NAV_WIDTH}
           sx={{
@@ -181,28 +190,26 @@ const CollapsibleNavigation: React.FC = () => {
           <Header
             direction="row"
             alignItems="stretch"
-            isCollapsed={isCollapsed}
+            isCollapsed={isOpen}
           >
-            <Fade in={isCollapsed} unmountOnExit>
-              <Box flex={1} display="flex" alignItems="center">
+            {isOpen && <Box flex={1} display="flex" alignItems="center">
                 <img src="/imgs/logo.png" alt="logo" />
-              </Box>
-            </Fade>
+              </Box>}
             <Box
               flex={0}
               display="flex"
               justifyContent="center"
-              marginTop={!isCollapsed ? 0 : "-28px"}
-              marginBottom={!isCollapsed ? 0 : "-28px"}
+              marginTop={!isOpen ? 0 : "-28px"}
+              marginBottom={!isOpen ? 0 : "-28px"}
               alignItems="center"
               sx={{
-                backgroundColor: !isCollapsed
+                backgroundColor: !isOpen
                   ? "transparent"
                   : "hsla(0,0%,100%,.2)",
               }}
             >
               <ToggleButton onClick={handleToggleCollapse}>
-                {!isCollapsed ? <MenuIcon /> : <ChevronLeftIcon />}
+                {!isOpen ? <MenuIcon /> : <ChevronLeftIcon />}
               </ToggleButton>
             </Box>
           </Header>
@@ -210,12 +217,12 @@ const CollapsibleNavigation: React.FC = () => {
             {Object.entries(NAVIGATION_ITEMS).map(([title, items]) => {
               return (
                 <React.Fragment key={title}>
-                  {isCollapsed && (
+                  {isOpen && (
                     <MenuSeparateTitle key={title}>{title}</MenuSeparateTitle>
                   )}
                   {items.map((item) => (
                     <NavigationItem
-                      isCollapsed={isCollapsed}
+                      isCollapsed={isOpen}
                       key={item.href}
                       {...item}
                     />

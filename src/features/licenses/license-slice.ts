@@ -1,5 +1,5 @@
 import { RootState } from "@/app/store";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { getLicenses } from "./license-api";
 import type { License } from './license-mode';
@@ -20,22 +20,36 @@ export const fetchLicenses = createAsyncThunk(
 );
 
 // Define a type for the slice state
+export type LicenseByApp = {
+  name: string;
+  id: string;
+  logo: string;
+  licenses: License[];
+};
+
 interface LicenseState {
   isLoading: boolean,
-  items: License[]
+  items: License[],
+  selectedItem: LicenseByApp | null
 }
+
 
 // Define the initial state using that type
 const initialState: LicenseState = {
   isLoading: false,
   items: [],
+  selectedItem: null
 };
 
-export const licenseState = createSlice({
+export const licenseSlice = createSlice({
   name: "auth",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
-  reducers: {},
+  reducers: {
+    selectLicenseDetail: (state, action: PayloadAction<LicenseByApp | null>) => {
+      state.selectedItem = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     // Auth Login
     builder.addCase(fetchLicenses.pending, (state) => {
@@ -51,8 +65,11 @@ export const licenseState = createSlice({
   },
 });
 
+export const { selectLicenseDetail } = licenseSlice.actions;
+
 export const selectIsLicenseLoading = (state: RootState) =>
   state.license.items;
 export const selectLicenses = (state: RootState) => state.license.items;
+export const selectedLicenceDetail = (state: RootState) => state.license.selectedItem;
 
-export default licenseState.reducer;
+export default licenseSlice.reducer;

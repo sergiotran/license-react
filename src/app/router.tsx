@@ -5,7 +5,6 @@ import routes from '~react-pages';
 import { useRoutes } from "react-router-dom";
 
 export const Router = () => {
-  console.log(routes);
   return (
     <Suspense fallback={<Loading />}>
       {useRoutes(routes)}

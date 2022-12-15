@@ -1,7 +1,6 @@
 import withAuth from '@/common/hocs/with-auth'
 import MainLayout from '@/common/layouts/main-layout'
 import AccountInformationUI from '@/features/accounts/information'
-import React from 'react'
 
 const AccountInformationPage = () => {
   return (

@@ -26,3 +26,4 @@ export function login(payload: Partial<LoginPayload>): Promise<LoginResponse> {
       .catch((err) => reject(err));
   });
 }
+

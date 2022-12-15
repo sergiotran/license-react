@@ -8,12 +8,14 @@ import CropFreeIcon from "@mui/icons-material/CropFree";
 import { capitalize, IconButton, InputAdornment, styled } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { LoginPayload } from "@/features/auth/auth-api";
+import { LoginPayload, LoginResponse } from "@/features/auth/auth-api";
 import { useNavigate } from "react-router-dom";
 import { fetchAccountById, setAccountId } from "../accounts/account-slice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { authLogin, selectIsProcessingAuthentication } from "./auth-slice";
 import { handleShowSnackbar } from "../snackbar/snackbar-slice";
+import { fetchLicenses } from "../licenses/license-slice";
+import { fetchApplications } from '../application/application-slice';
 
 const LOGIN_TYPES = [
   {
@@ -99,9 +101,7 @@ const LoginUI = () => {
   }, [loginType]);
 
   // Hooks
-  const { control, handleSubmit, reset } = useForm<
-    Partial<LoginPayload>
-  >({
+  const { control, handleSubmit, reset } = useForm<Partial<LoginPayload>>({
     defaultValues: formDefaultValue,
   });
   const navigate = useNavigate();
@@ -113,17 +113,27 @@ const LoginUI = () => {
     return () => setLoginTypes(type);
   };
 
+  const handleFetchEssential = (data: LoginResponse) => {
+    dispatch(setAccountId(data.account_id));
+    dispatch(fetchAccountById(data.account_id));
+    dispatch(fetchApplications());
+    dispatch(fetchLicenses());
+  };
+
+  const handleSaveLocal = (data: LoginResponse) => {
+    localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+    localStorage.setItem("jwt", data.jwt);
+  };
+
   const handleSubmitForm = React.useCallback(
     (payload: Partial<LoginPayload>) => {
       dispatch(authLogin(payload))
         .unwrap()
         .then((data) => {
-          dispatch(setAccountId(data.account_id));
-          dispatch(fetchAccountById(data.account_id));
-          localStorage.setItem("access_token", data.access_token);
-          localStorage.setItem("refresh_token", data.refresh_token);
-          localStorage.setItem("jwt", data.jwt);
-          navigate("/dashboard/home");
+          handleFetchEssential(data);
+          handleSaveLocal(data);
+          navigate("/settings/home");
         })
         .catch((err) => {
           dispatch(
