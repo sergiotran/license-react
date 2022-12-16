@@ -5,7 +5,7 @@ import React from "react";
 
 const PaymentMethodManagePage = () => {
   return (
-    <MainLayout>
+    <MainLayout title='Payment method'>
       <PaymentManageUI />
     </MainLayout>
   );

@@ -18,7 +18,7 @@ const Main = styled("main", {
   flex: 1,
   ...(isFullHeight ? {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   } : {})
 }));
 
@@ -56,6 +56,11 @@ const MainLayout: React.FC<
                   sx={{
                     backgroundColor: "white",
                     padding: 4,
+                    ...(isFullHeight ? {
+                      flex: 1,
+                      overflow:'auto'
+                    } : {}),
+                    boxSizing:'border-box',
                   }}
                   elevation={0}
                 >

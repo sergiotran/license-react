@@ -1,11 +1,11 @@
 import withAuth from "@/common/hocs/with-auth";
 import MainLayout from "@/common/layouts/main-layout";
-import React from "react";
+import UserManageUI from '@/features/users/user-manage';
 
 const UserPage = () => {
   return (
-    <MainLayout>
-      <div>UserPage</div>
+    <MainLayout isFullHeight title='User management'>
+      <UserManageUI />
     </MainLayout>
   );
 };

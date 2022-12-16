@@ -2,7 +2,7 @@ import { RootState } from "@/app/store";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { getLicenses } from "./license-api";
-import type { License } from './license-mode';
+import type { License } from './license-model';
 
 // Thunk
 export const fetchLicenses = createAsyncThunk(
@@ -24,6 +24,7 @@ export type LicenseByApp = {
   name: string;
   id: string;
   logo: string;
+  plan: string;
   licenses: License[];
 };
 

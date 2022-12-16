@@ -1,11 +1,32 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { AxiosError } from 'axios';
+import type { AxiosError } from "axios";
 import type { RootState } from "../../app/store";
 import { Account } from "./account-model";
-import { getAccount, updateAccount } from "./account-api";
+import { getAccount, getAccounts, updateAccount } from "./account-api";
 
 // Thunk
+export const fetchAccountsByMerchantId = createAsyncThunk(
+  "account/fetchAccountsByMerchantId",
+  async (
+    {
+      page = 1,
+      limit = 10,
+      merchant_id,
+    }: { page: number; limit: number; merchant_id: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await getAccounts(page, limit, merchant_id);
+      return response;
+    } catch (error) {
+      const data = (error as AxiosError<{ code: number; message: string }>)
+        .response!.data;
+      return rejectWithValue(data);
+    }
+  }
+);
+
 export const fetchAccountById = createAsyncThunk(
   "account/fetchAccountById",
   async (accountId: string, { rejectWithValue }) => {
@@ -59,9 +80,9 @@ export const accountSlice = createSlice({
     setAccountData: (state, action: PayloadAction<Account>) => {
       state.accountData = {
         ...state.accountData,
-        ...action.payload
-      }
-    }
+        ...action.payload,
+      };
+    },
   },
   extraReducers: (builder) => {
     // Fetch

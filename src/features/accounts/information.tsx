@@ -66,10 +66,6 @@ const AccountInformationUI = () => {
     <Box
       width="100%"
       maxWidth="680px"
-      marginTop={{
-        xs: "15px",
-        md: "62px",
-      }}
       marginLeft="auto"
       marginRight="auto"
     >

@@ -19,6 +19,10 @@ import { AppTitle } from "./components/app-title";
 import { ChangePlanButton } from "./components/change-plan-btn";
 import { LogoBox } from "./components/logo-box";
 import { selectedLicenceDetail } from "./license-slice";
+import LicenseDetailModal from './components/license-detail-modal';
+import { License } from './license-model';
+import { StatusText } from './components/status-text';
+import { TableInput } from './components/table-input';
 
 const ViewAppStoreBtn = styled(Button)({
   borderRadius: "50px",
@@ -35,15 +39,6 @@ const ContentHeading = styled(Typography)({
   color: "#555555",
 });
 
-const StatusText = styled("span", {
-  shouldForwardProp: (props) => props !== "isActive",
-})<{ isActive: boolean }>(({ theme, isActive = false }) => ({
-  fontWeight: 400,
-  fontSize: "15px",
-  lineHeight: "20px",
-  color: isActive ? theme.palette.primary.main : "#757474",
-}));
-
 const ViewDetailBtn = styled(Button)({
   color: "#2887CC",
   fontWeight: 400,
@@ -59,28 +54,42 @@ const THeadCell = styled(TableCell)({
   fontWeight: 700,
   fontSize: "15px",
   lineHeight: "20px",
-});
-const TInput = styled(Input)({
-  width: "100%",
-  "& input": {
-    border: "1px solid #E9E9E9",
-    padding: "8px 15px",
-    borderRadius: "4px",
-    color: "#555555",
-  },
+  backgroundColor: "#8797A1",
 });
 
 const LicenseDetailUI = () => {
   const { licenses, logo, name } = useAppSelector(selectedLicenceDetail)!;
+  const [detailData, setDetailData] = React.useState<License | null>(null);
+
+  const handleViewDetail = (data: License | null) => () => {
+    setDetailData(data);
+  }
+
+  const handleCloseViewDetail = () => {
+    setDetailData(null);
+  };
 
   return (
     <Box
       sx={{
-        padding: "61px 34px",
+        height: '100%',
+        boxSizing: 'border-box'
       }}
     >
-      <Stack spacing="43px">
-        <Stack direction="row">
+      <Stack height='100%' spacing="43px">
+        <Stack direction={{
+          xs: 'column',
+          md: 'row'
+        }} spacing={{
+          xs: 2,
+          md: 0,
+        }} alignItems={{
+          xs: 'center',
+          md: 'initial'
+        }} textAlign={{
+          xs: 'center',
+          md: 'left'
+        }}>
           <LogoBox>
             <img src={logo} alt={name} />
           </LogoBox>
@@ -91,16 +100,11 @@ const LicenseDetailUI = () => {
             </ViewAppStoreBtn>
           </Stack>
         </Stack>
-        <Stack spacing="19px">
+        <Stack height='100%' overflow='auto' spacing="19px">
           <ContentHeading>Your licenses:</ContentHeading>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <THead
-                sx={{
-                  backgroundColor: "#8797A1",
-                  color: "#fff",
-                }}
-              >
+            <Table  stickyHeader sx={{ minWidth: 768, flex: 1, maxHeight: '100%' }} >
+              <THead>
                 <TableRow>
                   <THeadCell>License status</THeadCell>
                   <THeadCell>Base url</THeadCell>
@@ -118,39 +122,26 @@ const LicenseDetailUI = () => {
                     <TableCell component="th" scope="row">
                       <Stack direction="row" spacing="14px">
                         {(() => {
-                          if (license.is_active) {
-                            return (
-                              <>
-                                <img
-                                  width={24}
-                                  height={21}
-                                  src="/icons/ic-certificate-active.svg"
-                                  alt="License active"
-                                />
-                                <StatusText isActive={true}>Active</StatusText>
-                              </>
-                            );
-                          }
+                          const statusText = license.is_active ? 'Active' : 'Deactive';
                           return (
                             <>
                               <img
                                 width={24}
-                                height={21}
-                                src="/icons/ic-certificate-deactive.svg"
-                                alt="License deactive"
+                                src={`/icons/ic-certificate-${statusText.toLowerCase()}.svg`}
+                                alt={"License active"}
                               />
-                              <StatusText isActive={false}>Deactive</StatusText>
+                              <StatusText isActive={license.is_active}>{statusText}</StatusText>
                             </>
                           );
                         })()}
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <TInput value={license.auth_url} disabled />
+                      <TableInput value={license.auth_url} disabled />
                     </TableCell>
-                    <TableCell>Premium</TableCell>
+                    <TableCell>{license.plan_code ?? '﹘'}</TableCell>
                     <TableCell>
-                      <ViewDetailBtn variant="text">View detail</ViewDetailBtn>
+                      <ViewDetailBtn onClick={handleViewDetail(license)} variant="text">View detail</ViewDetailBtn>
                     </TableCell>
                     <TableCell>
                       <ChangePlanButton>Change plan</ChangePlanButton>
@@ -160,6 +151,7 @@ const LicenseDetailUI = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <LicenseDetailModal data={detailData} visible={!!detailData} handleClose={handleCloseViewDetail} />
         </Stack>
       </Stack>
     </Box>

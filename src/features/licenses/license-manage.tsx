@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { Box, Stack, styled } from "@mui/material";
+import { Box, Stack, capitalize, styled } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 import { selectApplicationList } from "../application/application-slice";
@@ -18,6 +18,13 @@ const ViewDetailBtn = styled(Link)({
   color: "#26A69A",
   textDecoration: "none",
 });
+const ContentHeading = styled('h3')({
+  fontWeight: 700,
+  fontSize: '16px',
+  lineHeight: '38px',
+  color: '#646C7B',
+  marginBottom: '36px',
+})
 
 const LicenseManageUI = () => {
   const dispatch = useAppDispatch();
@@ -32,42 +39,35 @@ const LicenseManageUI = () => {
   React.useEffect(() => {
     if (licenseList.length > 0 && applicationList.length > 0) {
       setLicenseByApp(
-        applicationList.map((app) => ({
-          name: app.name,
-          id: app.id,
-          logo: `/icons/ic-logo-${app.code}.svg`,
-          licenses: licenseList.filter(
-            (license) => license.application_id === app.id
-          ),
-        }))
+        Object.values(
+          licenseList.reduce((acc: { [key: string]: LicenseByApp }, v) => {
+            acc[v.application_id] = {
+              name: capitalize(v.application_code),
+              id: v.application_id,
+              logo: `/icons/ic-logo-${v.application_code}.svg`,
+              plan: v.plan_code,
+              licenses: acc[v.application_id]?.licenses || [],
+            };
+            acc[v.application_id].licenses.push(v);
+            return acc;
+          }, {})
+        )
       );
     }
   }, []);
 
   return (
-    <Box
-      paddingTop={{
-        xs: "0",
-        lg: "36px",
-      }}
-      paddingLeft={{
-        xs: "0",
-        lg: "64px",
-      }}
-      paddingRight={{
-        xs: "0",
-        lg: "64px",
-      }}
-    >
+    <Box>
+      <ContentHeading>ConnectPOS Products</ContentHeading>
       <Stack
         direction={{
           xs: "column",
-          lg: "row",
+          md: "row",
         }}
         flexWrap="wrap"
         spacing={{
           xs: 2,
-          lg: 0,
+          md: 0,
         }}
       >
         {licenseByApp.map((item) => (
@@ -82,6 +82,7 @@ const LicenseManageUI = () => {
             </LogoBox>
             <Stack>
               <AppTitle>{item.name}</AppTitle>
+              {!!item.plan && <span>Plan: {item.plan}</span>}
               <ViewDetailBtn
                 onClick={handleSelectAppDetail(item)}
                 to={`/settings/licenses/${item.id}/detail`}

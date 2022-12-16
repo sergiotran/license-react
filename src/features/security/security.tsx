@@ -25,7 +25,7 @@ const SecurityUI = () => {
       sx={{
         width: "100%",
         maxWidth: "680px",
-        margin: "62px auto",
+        margin: "0px auto",
       }}
     >
       <form onSubmit={handleSubmit(handleSubmitForm)}>
