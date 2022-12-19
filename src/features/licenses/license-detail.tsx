@@ -2,7 +2,6 @@ import { useAppSelector } from "@/app/store";
 import {
   Box,
   Button,
-  Input,
   Paper,
   Stack,
   styled,
@@ -30,6 +29,7 @@ const ViewAppStoreBtn = styled(Button)({
   lineHeight: "20px",
   fontWeight: 400,
   textTransform: "none",
+  padding: '9px 14px'
 });
 
 const ContentHeading = styled(Typography)({
@@ -46,10 +46,10 @@ const ViewDetailBtn = styled(Button)({
   lineHeight: "20px",
 });
 
-const THead = styled(TableHead)({
+export const THead = styled(TableHead)({
   backgroundColor: "#8797A1",
 });
-const THeadCell = styled(TableCell)({
+export const THeadCell = styled(TableCell)({
   color: "#fff",
   fontWeight: 700,
   fontSize: "15px",

@@ -1,7 +1,10 @@
 import React from "react";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import Input, { InputProps } from "@mui/material/Input";
-import { Stack, styled } from "@mui/material";
+import {
+  Stack,
+  styled,
+} from "@mui/material";
 
 const FormLabel = styled("label", {
   shouldForwardProp: (props) => props !== "isRequired",
@@ -25,13 +28,13 @@ const FormLabel = styled("label", {
       },
 }));
 
-const MainInput: React.FC<TextFieldProps> = React.forwardRef(
+export const MainInput: React.FC<TextFieldProps> = React.forwardRef(
   function _MainInput(props, ref) {
     return <TextField ref={ref} {...props} variant="filled" />;
   }
 );
 
-const SecondaryInput: React.FC<{ label: string } & InputProps> =
+export const SecondaryInput: React.FC<{ label?: string } & InputProps> =
   React.forwardRef(function _SecondaryInput(props, ref) {
     return (
       <Stack
@@ -39,12 +42,14 @@ const SecondaryInput: React.FC<{ label: string } & InputProps> =
         justifyContent="space-between"
         spacing={{
           xs: 2,
-          md: 0
+          md: 0,
         }}
       >
-        <FormLabel isRequired htmlFor={props!.name}>
-          {props!.label}
-        </FormLabel>
+        {!!props!.label && (
+          <FormLabel isRequired htmlFor={props!.name}>
+            {props!.label}
+          </FormLabel>
+        )}
         <Input
           ref={ref}
           {...props}
@@ -56,6 +61,7 @@ const SecondaryInput: React.FC<{ label: string } & InputProps> =
             },
             flex: 1,
             borderRadius: "4px",
+            ...(props!.sx ?? {}),
           }}
           inputProps={{
             style: {
@@ -70,5 +76,3 @@ const SecondaryInput: React.FC<{ label: string } & InputProps> =
       </Stack>
     );
   });
-
-export { MainInput, SecondaryInput };

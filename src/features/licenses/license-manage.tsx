@@ -18,13 +18,13 @@ const ViewDetailBtn = styled(Link)({
   color: "#26A69A",
   textDecoration: "none",
 });
-const ContentHeading = styled('h3')({
+const ContentHeading = styled("h3")({
   fontWeight: 700,
-  fontSize: '16px',
-  lineHeight: '38px',
-  color: '#646C7B',
-  marginBottom: '36px',
-})
+  fontSize: "16px",
+  lineHeight: "38px",
+  color: "#646C7B",
+  marginBottom: "36px",
+});
 
 const LicenseManageUI = () => {
   const dispatch = useAppDispatch();
@@ -40,16 +40,16 @@ const LicenseManageUI = () => {
     if (licenseList.length > 0 && applicationList.length > 0) {
       setLicenseByApp(
         Object.values(
-          licenseList.reduce((acc: { [key: string]: LicenseByApp }, v) => {
-            acc[v.application_id] = {
-              name: capitalize(v.application_code),
-              id: v.application_id,
-              logo: `/icons/ic-logo-${v.application_code}.svg`,
-              plan: v.plan_code,
-              licenses: acc[v.application_id]?.licenses || [],
+          licenseList.reduce((apps: Record<string, LicenseByApp>, license) => {
+            apps[license.application_id] = {
+              name: capitalize(license.application_code),
+              id: license.application_id,
+              logo: `/icons/ic-logo-${license.application_code}.svg`,
+              plan: license.plan_code,
+              licenses: apps[license.application_id]?.licenses || [],
             };
-            acc[v.application_id].licenses.push(v);
-            return acc;
+            apps[license.application_id].licenses.push(license);
+            return apps;
           }, {})
         )
       );

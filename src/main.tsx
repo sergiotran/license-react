@@ -10,17 +10,15 @@ import { PersistGate } from "redux-persist/integration/react";
 import SnackbarNoti from "./features/snackbar/snackbar";
 
 ReactDOM.createRoot(document.getElementById("app") as HTMLElement).render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <Router />
-            <SnackbarNoti />
-          </PersistGate>
-        </Provider>
-      </BrowserRouter>
-    </ThemeProvider>
-  </React.StrictMode>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <BrowserRouter>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Router />
+          <SnackbarNoti />
+        </PersistGate>
+      </Provider>
+    </BrowserRouter>
+  </ThemeProvider>
 );

@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { fetchAccountsByMerchantId } from '../accounts/account-slice';
 import { Account } from '../accounts/account-model';
+import { RootState } from '@/app/store';
 
 // Thunk
 
@@ -8,11 +9,13 @@ import { Account } from '../accounts/account-model';
 interface UserState {
   isLoading: boolean;
   users: Account[],
-  filterData: {
-    username: string;
-    email: string;
-    status: boolean | null
-  }
+  filterData: Partial<FilterData>
+}
+export interface FilterData {
+  username: string;
+  email: string;
+  status: string;
+  statusSearchText: string;
 }
 
 // Define the initial state using that type
@@ -22,7 +25,8 @@ const initialState: UserState = {
   filterData: {
     username: '',
     email: '',
-    status: null
+    status: '',
+    statusSearchText: ''
   }
 };
 
@@ -31,6 +35,15 @@ export const userSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    setFilterData: (state, action: PayloadAction<Partial<FilterData>>) => {
+      state.filterData = {
+        ...state.filterData,
+        ...action.payload
+      };
+    },
+    setStatusSearchText: (state, action: PayloadAction<Partial<string>>) => {
+      state.filterData.statusSearchText = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAccountsByMerchantId.pending, (state) => {
@@ -45,5 +58,10 @@ export const userSlice = createSlice({
     })
   }
 });
+
+export const { setFilterData, setStatusSearchText } = userSlice.actions;
+
+export const selectUserFilterData = (state: RootState) => state.user.filterData;
+export const selectUserFilterStatusSearchText = (state: RootState) => state.user.filterData.statusSearchText;
 
 export default userSlice.reducer;
