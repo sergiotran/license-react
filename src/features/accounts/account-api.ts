@@ -1,5 +1,6 @@
 import { Account } from "@/features/accounts/account-model";
 import { coreHttp } from "@/app/axios";
+import { FilterData } from "../users/user-slice";
 
 export interface GetAccountListResponse {
   items: Account[];
@@ -9,11 +10,26 @@ export interface GetAccountListResponse {
   limit: number;
 }
 
-export function getAccounts(page: number, limit: number, merchant_id: string) {
+export function getAccounts(
+  page: number,
+  limit: number,
+  merchant_id: string,
+  filterData: FilterData
+) {
   return new Promise((resolve, reject) => {
+    const filterParam = new URLSearchParams(Object.entries({ ...filterData }).reduce(
+      (total: Record<string, string>, [key, value]) => {
+        if (value.length > 0) {
+          total[key] = value;
+        }
+        return total;
+      },
+      {}
+    )).toString();
+
     coreHttp
       .get<GetAccountListResponse>(
-        `/accounts?page=${page}&limit=${limit}&merchant_id=${merchant_id}`
+        `/accounts?page=${page}&limit=${limit}&merchant_id=${merchant_id}${filterParam.length > 0 ? `&${filterParam}` : ''}`
       )
       .then((res) => {
         resolve(res.data.items);

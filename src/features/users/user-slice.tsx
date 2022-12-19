@@ -9,7 +9,7 @@ import { RootState } from '@/app/store';
 interface UserState {
   isLoading: boolean;
   users: Account[],
-  filterData: Partial<FilterData>
+  filterData: FilterData
 }
 export interface FilterData {
   username: string;
@@ -61,6 +61,7 @@ export const userSlice = createSlice({
 
 export const { setFilterData, setStatusSearchText } = userSlice.actions;
 
+export const selectUserList = (state: RootState) => state.user.users;
 export const selectUserFilterData = (state: RootState) => state.user.filterData;
 export const selectUserFilterStatusSearchText = (state: RootState) => state.user.filterData.statusSearchText;
 

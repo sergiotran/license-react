@@ -4,6 +4,7 @@ import type { AxiosError } from "axios";
 import type { RootState } from "../../app/store";
 import { Account } from "./account-model";
 import { getAccount, getAccounts, updateAccount } from "./account-api";
+import { FilterData } from '../users/user-slice';
 
 // Thunk
 export const fetchAccountsByMerchantId = createAsyncThunk(
@@ -13,11 +14,12 @@ export const fetchAccountsByMerchantId = createAsyncThunk(
       page = 1,
       limit = 10,
       merchant_id,
-    }: { page: number; limit: number; merchant_id: string },
+      filterData
+    }: { page: number; limit: number; merchant_id: string, filterData: FilterData },
     { rejectWithValue }
   ) => {
     try {
-      const response = await getAccounts(page, limit, merchant_id);
+      const response = await getAccounts(page, limit, merchant_id, filterData);
       return response;
     } catch (error) {
       const data = (error as AxiosError<{ code: number; message: string }>)

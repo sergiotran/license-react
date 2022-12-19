@@ -14,9 +14,26 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import React from "react";
 import UserFilterPanel from "./components/user-filter-panel";
 import { ChangePlanButton } from "../licenses/components/change-plan-btn";
-import { THead, THeadCell } from '../licenses/license-detail';
+import { THead, THeadCell } from "../licenses/license-detail";
+import { useAppDispatch, useAppSelector } from "@/app/store";
+import { fetchAccountsByMerchantId, selectAccountData } from "../accounts/account-slice";
+import { selectUserFilterData, selectUserList } from "./user-slice";
 
 const UserManageUI = () => {
+  const dispatch = useAppDispatch();
+  const accountData = useAppSelector(selectAccountData);
+  const filterData = useAppSelector(selectUserFilterData);
+  const userList = useAppSelector(selectUserList);
+
+  React.useEffect(() => {
+    dispatch(fetchAccountsByMerchantId({
+      page: 1,
+      limit: 10,
+      merchant_id: accountData!.merchant_id,
+      filterData,
+    }))
+  }, [filterData])
+
   return (
     <Box>
       <Stack direction="column" spacing="20px">
@@ -59,30 +76,31 @@ const UserManageUI = () => {
           >
             <THead>
               <TableRow>
-                <THeadCell>License status</THeadCell>
-                <THeadCell>Base url</THeadCell>
-                <THeadCell>Plan</THeadCell>
+                <THeadCell>Name</THeadCell>
+                <THeadCell>Username</THeadCell>
+                <THeadCell>Email</THeadCell>
                 <THeadCell>View detail</THeadCell>
                 <THeadCell>Change plan</THeadCell>
               </TableRow>
             </THead>
             <TableBody>
-              <TableRow
-                // key={license.id}
+              {userList.map((user) => <TableRow
+                key={user.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
                   <Stack direction="row" spacing="14px">
-                    123
+                    {user.name}
                   </Stack>
                 </TableCell>
-                <TableCell>123</TableCell>
-                <TableCell>{"﹘"}</TableCell>
-                <TableCell>123</TableCell>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.status}</TableCell>
                 <TableCell>
                   <ChangePlanButton>Change plan</ChangePlanButton>
                 </TableCell>
-              </TableRow>
+              </TableRow>)}
+              
             </TableBody>
           </Table>
         </TableContainer>
