@@ -7,14 +7,15 @@ import {
   fetchAccountById,
   selectAccountId,
 } from "@/features/accounts/account-slice";
+import useAccount from "@/common/hooks/use-account";
 
 const AccountInformationPage = () => {
-  const dispatch = useAppDispatch();
-  const accountId = useAppSelector(selectAccountId);
+  const { accountId, fetchAccount, accountDetail } = useAccount();
 
   React.useEffect(() => {
-    if (accountId) dispatch(fetchAccountById(accountId));
-  }, [accountId]);
+    if (accountId && accountDetail && accountId !== accountDetail.id)
+      fetchAccount(accountId);
+  }, [accountId, accountDetail]);
 
   return (
     <MainLayout title="Account Information">

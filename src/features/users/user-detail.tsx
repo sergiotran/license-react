@@ -1,32 +1,30 @@
 import { ResetButton, SaveButton } from "@/common/components/buttons";
-import { SecondaryInput } from "@/common/components/inputs";
+import { FormLabel, SecondaryInput } from "@/common/components/inputs";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { Account } from "../accounts/account-model";
-import { useAppDispatch, useAppSelector } from "@/app/store";
-import {
-  fetchAccountById,
-  selectAccountData,
-  selectAccountLoading,
-  setAccountData,
-  updateAccountInfo,
-} from "../accounts/account-slice";
-import { handleShowSnackbar } from '../snackbar/snackbar-slice';
+import Select from "@/common/components/select";
+import useAccount from "@/common/hooks/use-account";
+import useSnackbar from "@/common/hooks/use-snackbar";
 
 type Props = {
   isCreateAction?: boolean;
 };
 
 const UserDetailUI: React.FC<Props> = ({ isCreateAction = false }) => {
+  const { showSuccess, showError } = useSnackbar();
+  const {
+    updateAccount,
+    updateAccountLocalData,
+    isLoading,
+    accountDetail,
+    fetchAccount,
+  } = useAccount();
   const params = useParams();
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(selectAccountLoading);
 
-  const accountInformation = isCreateAction
-    ? {}
-    : useAppSelector(selectAccountData);
+  const accountInformation = isCreateAction ? {} : accountDetail;
   const { control, handleSubmit, setValue } = useForm<
     {
       new_password: string;
@@ -35,30 +33,17 @@ const UserDetailUI: React.FC<Props> = ({ isCreateAction = false }) => {
   >();
 
   const handleSubmitForm = async (data: Partial<Account>) => {
-    dispatch(updateAccountInfo(data))
-      .unwrap()
-      .then((value) => {
-        dispatch(
-          handleShowSnackbar({
-            type: "success",
-            message: "Update account successfully",
-          })
-        );
-        dispatch(setAccountData(value));
+    updateAccount(data)
+      .then((res) => {
+        showSuccess("Update account successfully");
+        updateAccountLocalData(res as Account);
       })
-      .catch((err) => {
-        dispatch(
-          handleShowSnackbar({
-            type: "error",
-            message: err.message,
-          })
-        );
-      });
+      .catch((err) => showError(err.message));
   };
 
   React.useEffect(() => {
     if (params.id && !isCreateAction) {
-      dispatch(fetchAccountById(params.id));
+      fetchAccount(params.id);
     }
   }, [params.id, isCreateAction]);
 
@@ -97,21 +82,24 @@ const UserDetailUI: React.FC<Props> = ({ isCreateAction = false }) => {
               name="username"
               control={control}
               render={({ field }) => (
-                <SecondaryInput label="Username" disabled={!isCreateAction} required {...field} />
+                <SecondaryInput
+                  label="Username"
+                  disabled={!isCreateAction}
+                  required
+                  {...field}
+                />
               )}
             />
             <Controller
               name="email"
               control={control}
               render={({ field }) => (
-                <SecondaryInput label="Email" disabled={!isCreateAction} {...field} required />
-              )}
-            />
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <SecondaryInput label="Phone number" {...field} />
+                <SecondaryInput
+                  label="Email"
+                  disabled={!isCreateAction}
+                  {...field}
+                  required
+                />
               )}
             />
             <Controller
@@ -126,6 +114,65 @@ const UserDetailUI: React.FC<Props> = ({ isCreateAction = false }) => {
               control={control}
               render={({ field }) => (
                 <SecondaryInput label="Confirm Password" {...field} />
+              )}
+            />
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <SecondaryInput label="Phone number" {...field} />
+              )}
+            />
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  justifyContent="space-between"
+                  spacing={{
+                    xs: 2,
+                    md: 0,
+                  }}
+                >
+                  <FormLabel isOptional={false} isRequired={false}>
+                    Role
+                  </FormLabel>
+                  <Select
+                    sx={{
+                      backgroundColor: "#ecf0f3",
+                      flex: 1,
+                    }}
+                    label="Role"
+                    {...field}
+                  />
+                </Stack>
+              )}
+            />
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  justifyContent="space-between"
+                  spacing={{
+                    xs: 2,
+                    md: 0,
+                  }}
+                >
+                  <FormLabel isOptional={false} isRequired={false}>
+                    Status
+                  </FormLabel>
+                  <Select
+                    sx={{
+                      backgroundColor: "#ecf0f3",
+                      flex: 1,
+                    }}
+                    label="Role"
+                    {...field}
+                  />
+                </Stack>
               )}
             />
           </Stack>

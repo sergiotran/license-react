@@ -4,7 +4,7 @@ import type { AxiosError } from "axios";
 import type { RootState } from "../../app/store";
 import { Account } from "./account-model";
 import { GetAccountListResponse, getAccount, getAccounts, updateAccount } from "./account-api";
-import { FilterData } from '../users/user-slice';
+import { FetchAccounts } from '@/common/hooks/use-account';
 
 // Thunk
 export const fetchAccountsByMerchantId = createAsyncThunk(
@@ -15,7 +15,7 @@ export const fetchAccountsByMerchantId = createAsyncThunk(
       limit = 10,
       merchant_id,
       filterData
-    }: { page: number; limit: number; merchant_id: string, filterData: FilterData },
+    }: FetchAccounts,
     { rejectWithValue }
   ) => {
     try {

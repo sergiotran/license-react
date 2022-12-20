@@ -10,12 +10,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoginPayload, LoginResponse } from "@/features/auth/auth-api";
 import { useNavigate } from "react-router-dom";
-import { fetchAccountById, setAccountId } from "../accounts/account-slice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { authLogin, selectIsProcessingAuthentication } from "./auth-slice";
 import { handleShowSnackbar } from "../snackbar/snackbar-slice";
-import { fetchLicenses } from "../licenses/license-slice";
-import { fetchApplications } from '../application/application-slice';
+import useAccount from '@/common/hooks/use-account';
 
 const LOGIN_TYPES = [
   {
@@ -74,6 +72,7 @@ const SubmitButton = styled(LoadingButton)(({ theme }) => ({
 }));
 
 const LoginUI = () => {
+  const { updateAccountMainId } = useAccount();
   const dispatch = useAppDispatch();
   // States
   const isFormProcessing = useAppSelector(selectIsProcessingAuthentication);
@@ -114,8 +113,7 @@ const LoginUI = () => {
   };
 
   const handleFetchEssential = (data: LoginResponse) => {
-    dispatch(setAccountId(data.account_id));
-    dispatch(fetchAccountById(data.account_id));
+    updateAccountMainId(data.account_id);
   };
 
   const handleSaveLocal = (data: LoginResponse) => {

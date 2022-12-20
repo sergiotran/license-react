@@ -54,7 +54,7 @@ const MainLayout: React.FC<
                 {!!title && <Title>{title}</Title>}
                 <Paper
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: title ? 'white' : 'transparent',
                     padding: 4,
                     ...(isFullHeight ? {
                       flex: 1,

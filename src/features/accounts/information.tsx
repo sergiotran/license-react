@@ -1,23 +1,16 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "@/app/store";
 import { SecondaryInput } from "@/common/components/inputs";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { Account } from "./account-model";
-import {
-  selectAccountData,
-  selectAccountLoading,
-  setAccountData,
-  updateAccountInfo,
-} from "./account-slice";
 import { isEqual } from "lodash";
-import { handleShowSnackbar } from "../snackbar/snackbar-slice";
 import { ResetButton, SaveButton } from "@/common/components/buttons";
+import useAccount from '@/common/hooks/use-account';
+import useSnackbar from '@/common/hooks/use-snackbar';
 
 const AccountInformationUI = () => {
-  const dispatch = useAppDispatch();
-  const accountInformation = useAppSelector(selectAccountData);
-  const isLoading = useAppSelector(selectAccountLoading);
+  const { showSuccess, showError } = useSnackbar();
+  const { accountDetail: accountInformation, isLoading, updateAccount, updateAccountLocalData } = useAccount();
 
   const [isResetAvailable, setIsResetAvaiable] = React.useState<boolean>(false);
 
@@ -30,25 +23,12 @@ const AccountInformationUI = () => {
   const watchAllField = watch();
 
   const handleSubmitForm = async (data: Partial<Account>) => {
-    dispatch(updateAccountInfo(data))
-      .unwrap()
-      .then((value) => {
-        dispatch(
-          handleShowSnackbar({
-            type: "success",
-            message: "Update account successfully",
-          })
-        );
-        dispatch(setAccountData(value));
-      })
-      .catch((err) => {
-        dispatch(
-          handleShowSnackbar({
-            type: "error",
-            message: err.message,
-          })
-        );
-      });
+    updateAccount(data).then((res) => {
+      showSuccess("Update account successfully");
+      updateAccountLocalData(res as Account);
+    }).catch((err) => {
+      showError(err.message);
+    })
   };
 
   const handleResetDefault = () => reset();

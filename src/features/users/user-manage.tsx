@@ -99,15 +99,16 @@ const UserManageUI = () => {
     navigate(`/settings/users/${userId}/detail`);
 
   React.useEffect(() => {
-    dispatch(
-      fetchAccountsByMerchantId({
-        page: paginationData.page,
-        limit: paginationData.limit,
-        merchant_id: accountData!.merchant_id,
-        filterData,
-      })
-    );
-  }, [filterData, paginationData]);
+    if (accountData)
+      dispatch(
+        fetchAccountsByMerchantId({
+          page: paginationData.page,
+          limit: paginationData.limit,
+          merchant_id: accountData!.merchant_id,
+          filterData,
+        })
+      );
+  }, [filterData, paginationData, accountData]);
 
   return (
     <Box>

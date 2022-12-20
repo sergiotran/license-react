@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { fetchAccountsByMerchantId } from '../accounts/account-slice';
 import { Account } from '../accounts/account-model';
 import { RootState } from '@/app/store';
+import { FilterData } from '@/common/hooks/use-account';
 
 // Thunk
 
@@ -19,11 +20,6 @@ export interface UserPaginationData {
   page: number;
   limit: number;
   total: number;
-}
-export interface FilterData {
-  username: string;
-  email: string;
-  status: string;
 }
 
 // Define the initial state using that type

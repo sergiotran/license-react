@@ -18,6 +18,7 @@ const Select: React.FC<SelectProps> = React.forwardRef(function _(props, ref) {
           minHeight: "auto",
           padding: "6px 12px",
         },
+        ...props!.sx
       }}
     >
       {props!.children}

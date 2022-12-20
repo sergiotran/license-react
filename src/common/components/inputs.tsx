@@ -6,7 +6,7 @@ import {
   styled,
 } from "@mui/material";
 
-const FormLabel = styled("label", {
+export const FormLabel = styled("label", {
   shouldForwardProp: (props) => props !== "isRequired" && props !== "isOptional",
 })<{ isRequired: boolean, isOptional: boolean }>(({ theme, isRequired = false, isOptional = false }) => ({
   textAlign: "left",

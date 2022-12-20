@@ -129,7 +129,7 @@ const ToggleButton = styled(IconButton)({
   },
 });
 
-const NAVIGATION_ITEMS = {
+export const NAVIGATION_ITEMS = {
   "Account Management": [
     {
       href: "/settings/account-information",
