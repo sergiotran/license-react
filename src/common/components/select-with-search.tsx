@@ -4,6 +4,7 @@ import { SecondaryInput } from "./inputs";
 import { useAppSelector } from "@/app/store";
 import { selectUserFilterStatusSearchText } from "@/features/users/user-slice";
 import Select from "./select";
+import useUser from "../hooks/use-user";
 
 type Props = {
   data: {
@@ -19,7 +20,7 @@ const SelectWithSearch: React.FC<Props> = React.forwardRef(
   function _SelectWithSearch(props, ref) {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const { data, searchOnChange, ...selectProps } = props!;
-    const searchValue = useAppSelector(selectUserFilterStatusSearchText);
+    const { searchValue } = useUser();
 
     const displayedOptions = React.useMemo(
       () =>

@@ -19,20 +19,10 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import React from "react";
 import UserFilterPanel from "./components/user-filter-panel";
-import { useAppDispatch, useAppSelector } from "@/app/store";
-import {
-  fetchAccountsByMerchantId,
-  selectAccountData,
-} from "../accounts/account-slice";
-import {
-  selectUserFilterData,
-  selectUserList,
-  selectUserLoading,
-  selectUserPaginationData,
-  setPaginationData,
-} from "./user-slice";
 import RemoveConfirmModal from "./components/confirm-remove-modal";
 import { useNavigate } from "react-router-dom";
+import useUser from "@/common/hooks/use-user";
+import useAccount from "@/common/hooks/use-account";
 
 const ActionButton = styled(Button)({
   textDecoration: "underline",
@@ -61,12 +51,14 @@ const THeadCell = styled(TCell)({
 const USER_LIMITS = [10, 20, 30, 40];
 
 const UserManageUI = () => {
-  const dispatch = useAppDispatch();
-  const accountData = useAppSelector(selectAccountData);
-  const filterData = useAppSelector(selectUserFilterData);
-  const paginationData = useAppSelector(selectUserPaginationData);
-  const userList = useAppSelector(selectUserList);
-  const isLoading = useAppSelector(selectUserLoading);
+  const {
+    filterData,
+    paginationData,
+    userList,
+    isLoading,
+    updatePaginationData,
+  } = useUser();
+  const { accountDetail, fetchAccounts } = useAccount();
   const navigate = useNavigate();
 
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(
@@ -77,19 +69,15 @@ const UserManageUI = () => {
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
-    dispatch(
-      setPaginationData({
-        page: value,
-      })
-    );
+    updatePaginationData({
+      page: value,
+    });
   };
 
   const handleChangeLimit = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(
-      setPaginationData({
-        limit: +event.target.value,
-      })
-    );
+    updatePaginationData({
+      limit: +event.target.value,
+    });
   };
 
   const handlerRemoveUser = (userId: string) => () => setSelectedUserId(userId);
@@ -99,16 +87,14 @@ const UserManageUI = () => {
     navigate(`/settings/users/${userId}/detail`);
 
   React.useEffect(() => {
-    if (accountData)
-      dispatch(
-        fetchAccountsByMerchantId({
-          page: paginationData.page,
-          limit: paginationData.limit,
-          merchant_id: accountData!.merchant_id,
-          filterData,
-        })
-      );
-  }, [filterData, paginationData, accountData]);
+    if (accountDetail)
+      fetchAccounts({
+        page: paginationData.page,
+        limit: paginationData.limit,
+        merchant_id: accountDetail!.merchant_id,
+        filterData,
+      });
+  }, [filterData, paginationData, accountDetail]);
 
   return (
     <Box>

@@ -3,6 +3,7 @@ import { fetchAccountsByMerchantId } from '../accounts/account-slice';
 import { Account } from '../accounts/account-model';
 import { RootState } from '@/app/store';
 import { FilterData } from '@/common/hooks/use-account';
+import { UserPaginationData } from '@/common/hooks/use-user';
 
 // Thunk
 
@@ -14,12 +15,6 @@ interface UserState {
   filterData: FilterData;
   pagination: UserPaginationData
   statusSearchText: string;
-}
-
-export interface UserPaginationData {
-  page: number;
-  limit: number;
-  total: number;
 }
 
 // Define the initial state using that type
