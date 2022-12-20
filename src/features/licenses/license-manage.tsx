@@ -30,14 +30,13 @@ const LicenseManageUI = () => {
   const dispatch = useAppDispatch();
   const [licenseByApp, setLicenseByApp] = React.useState<LicenseByApp[]>([]);
   const licenseList = useAppSelector(selectLicenses);
-  const applicationList = useAppSelector(selectApplicationList);
 
   const handleSelectAppDetail = (item: LicenseByApp) => {
     return () => dispatch(selectLicenseDetail(item));
   };
 
   React.useEffect(() => {
-    if (licenseList.length > 0 && applicationList.length > 0) {
+    if (!!licenseList && licenseList.length > 0) {
       setLicenseByApp(
         Object.values(
           licenseList.reduce((apps: Record<string, LicenseByApp>, license) => {
@@ -54,7 +53,7 @@ const LicenseManageUI = () => {
         )
       );
     }
-  }, []);
+  }, [licenseList]);
 
   return (
     <Box>

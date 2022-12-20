@@ -17,7 +17,7 @@ export function getAccounts(
   filterData: FilterData
 ) {
   return new Promise((resolve, reject) => {
-    const filterParam = new URLSearchParams(Object.entries({ ...filterData }).reduce(
+    const filterParam = new URLSearchParams((Object.entries({ ...filterData })).reduce(
       (total: Record<string, string>, [key, value]) => {
         if (value.length > 0) {
           total[key] = value;
@@ -32,7 +32,7 @@ export function getAccounts(
         `/accounts?page=${page}&limit=${limit}&merchant_id=${merchant_id}${filterParam.length > 0 ? `&${filterParam}` : ''}`
       )
       .then((res) => {
-        resolve(res.data.items);
+        resolve(res.data);
       })
       .catch((err) => {
         reject(err);
@@ -53,10 +53,36 @@ export function getAccount(id: string) {
   });
 }
 
+// export function createAccount(dto) {
+//   return new Promise((resolve, reject) => {
+//     coreHttp
+//       .post<Account>(`/accounts`)
+//       .then((res) => {
+//         resolve(res.data);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
+
 export function updateAccount(id: string, payload: Partial<Account>) {
   return new Promise((resolve, reject) => {
     coreHttp
       .put<Account>(`/accounts/${id}`, payload)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+export function deleteAccount(id: string) {
+  return new Promise((resolve, reject) => {
+    coreHttp
+      .delete(`/accounts/${id}`)
       .then((res) => {
         resolve(res.data);
       })

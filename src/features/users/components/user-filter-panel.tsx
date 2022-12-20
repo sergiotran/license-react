@@ -140,7 +140,6 @@ const UserFilterPanel = () => {
           name="status"
           control={control}
           render={({ field }) => {
-            console.log(field.onBlur);
             return (
               <SelectWithSearch
                 value={field.value}

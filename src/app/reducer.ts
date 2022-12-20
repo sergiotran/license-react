@@ -3,6 +3,7 @@ import applicationSlice from '@/features/application/application-slice';
 import authSlice from '@/features/auth/auth-slice';
 import licenseSlice from '@/features/licenses/license-slice';
 import navigationSlice from '@/features/navigation/navigation-slice';
+import permissionSlice from '@/features/permissions/permission-slice';
 import snackbarSlice from '@/features/snackbar/snackbar-slice';
 import userSlice from '@/features/users/user-slice';
 import { combineReducers } from 'redux'
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
   license: licenseSlice,
   navigation: navigationSlice,
   application: applicationSlice,
-  user: userSlice
+  user: userSlice,
+  permission: permissionSlice
 });
 
 export default rootReducer;

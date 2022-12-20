@@ -1,13 +1,9 @@
-import {
-  ListSubheader,
-  MenuItem,
-  Select,
-  SelectProps,
-} from "@mui/material";
+import { ListSubheader, MenuItem, SelectProps } from "@mui/material";
 import React from "react";
 import { SecondaryInput } from "./inputs";
-import { useAppSelector } from '@/app/store';
-import { selectUserFilterStatusSearchText } from '@/features/users/user-slice';
+import { useAppSelector } from "@/app/store";
+import { selectUserFilterStatusSearchText } from "@/features/users/user-slice";
+import Select from "./select";
 
 type Props = {
   data: {
@@ -25,31 +21,24 @@ const SelectWithSearch: React.FC<Props> = React.forwardRef(
     const { data, searchOnChange, ...selectProps } = props!;
     const searchValue = useAppSelector(selectUserFilterStatusSearchText);
 
-    const displayedOptions = React.useMemo(() => data.filter((item) => item.value.toLowerCase().indexOf(searchValue?.toLowerCase() ?? '') > -1), [searchValue]);
+    const displayedOptions = React.useMemo(
+      () =>
+        data.filter(
+          (item) =>
+            item.value.toLowerCase().indexOf(searchValue?.toLowerCase() ?? "") >
+            -1
+        ),
+      [searchValue]
+    );
 
     React.useEffect(() => {
-      if(inputRef.current) {
+      if (inputRef.current) {
         inputRef.current.focus();
       }
-    }, [inputRef.current])
+    }, [inputRef.current]);
 
     return (
-      <Select
-        ref={ref}
-        {...selectProps}
-        sx={{
-          backgroundColor: "#fff",
-          height: "40px",
-          fontSize: "14px",
-          "& .MuiOutlinedInput-notchedOutline": {
-            display: "none",
-          },
-          "& .MuiSelect-select": {
-            minHeight: "auto",
-            padding: "6px 12px",
-          },
-        }}
-      >
+      <Select ref={ref} {...selectProps}>
         <ListSubheader sx={{ paddingX: 1, paddingBottom: 1 }}>
           <SecondaryInput
             size="small"

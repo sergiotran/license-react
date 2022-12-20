@@ -7,8 +7,8 @@ import {
 } from "@mui/material";
 
 const FormLabel = styled("label", {
-  shouldForwardProp: (props) => props !== "isRequired",
-})<{ isRequired: boolean }>(({ theme, isRequired = false }) => ({
+  shouldForwardProp: (props) => props !== "isRequired" && props !== "isOptional",
+})<{ isRequired: boolean, isOptional: boolean }>(({ theme, isRequired = false, isOptional = false }) => ({
   textAlign: "left",
   fontWeight: 600,
   width: 190,
@@ -19,13 +19,13 @@ const FormLabel = styled("label", {
         color: theme.palette.error.main,
         marginLeft: 5,
       }
-    : {
-        content: '"(Optional)"',
-        color: "#f4a522",
-        display: "block",
-        fontSize: 12,
-        fontWeight: 100,
-      },
+    : isOptional ? {
+      content: '"(Optional)"',
+      color: "#f4a522",
+      display: "block",
+      fontSize: 12,
+      fontWeight: 100,
+    } : {},
 }));
 
 export const MainInput: React.FC<TextFieldProps> = React.forwardRef(
@@ -34,7 +34,7 @@ export const MainInput: React.FC<TextFieldProps> = React.forwardRef(
   }
 );
 
-export const SecondaryInput: React.FC<{ label?: string } & InputProps> =
+export const SecondaryInput: React.FC<{ label?: string, isOptional?: boolean } & InputProps> =
   React.forwardRef(function _SecondaryInput(props, ref) {
     return (
       <Stack
@@ -46,7 +46,7 @@ export const SecondaryInput: React.FC<{ label?: string } & InputProps> =
         }}
       >
         {!!props!.label && (
-          <FormLabel isRequired htmlFor={props!.name}>
+          <FormLabel isOptional={props!.isOptional || false} isRequired={props!.required || false} htmlFor={props!.name}>
             {props!.label}
           </FormLabel>
         )}

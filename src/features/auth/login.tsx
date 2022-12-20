@@ -115,6 +115,7 @@ const LoginUI = () => {
 
   const handleFetchEssential = (data: LoginResponse) => {
     dispatch(setAccountId(data.account_id));
+    dispatch(fetchAccountById(data.account_id));
   };
 
   const handleSaveLocal = (data: LoginResponse) => {

@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
 import type { RootState } from "../../app/store";
 import { Account } from "./account-model";
-import { getAccount, getAccounts, updateAccount } from "./account-api";
+import { GetAccountListResponse, getAccount, getAccounts, updateAccount } from "./account-api";
 import { FilterData } from '../users/user-slice';
 
 // Thunk
@@ -20,7 +20,7 @@ export const fetchAccountsByMerchantId = createAsyncThunk(
   ) => {
     try {
       const response = await getAccounts(page, limit, merchant_id, filterData);
-      return response;
+      return response as GetAccountListResponse;
     } catch (error) {
       const data = (error as AxiosError<{ code: number; message: string }>)
         .response!.data;
